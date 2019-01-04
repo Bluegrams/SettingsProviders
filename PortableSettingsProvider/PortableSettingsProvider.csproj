@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <Version>0.1.1</Version>
+    <Company>Bluegrams</Company>
+    <Authors>Bluegrams</Authors>
+    <Copyright>© Bluegrams 2018</Copyright>
+    <PackageId>PortableSettingsProvider</PackageId>
+    <Description>
+      Make WPF and WinForms settings portable by saving them in the application folder.
+Read more at https://www.codeproject.com/Articles/1238550/Making-Application-Settings-Portable.
+    </Description>
+    <PackageProjectUrl>https://www.codeproject.com/Articles/1238550/Making-Application-Settings-Portable</PackageProjectUrl>
+    <PackageLicenseUrl>https://www.codeproject.com/info/cpol10.aspx</PackageLicenseUrl>
+    <PackageTags>winforms wpf application settings portable</PackageTags>
+    <PackageReleaseNotes>V.0.1.1 fixes some bugs.</PackageReleaseNotes>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+</Project>
