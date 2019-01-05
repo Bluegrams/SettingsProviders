@@ -1,0 +1,21 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="SettingsProviderTests.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="AString" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Hello World!</Value>
+    </Setting>
+    <Setting Name="ARoamedNumber" Type="System.Double" Scope="User">
+      <Value Profile="(Default)">3.141</Value>
+    </Setting>
+    <Setting Name="ADateTime" Type="System.DateTime" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="APerson" Type="SettingsProviderTests.Person" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="AColorAsBinary" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+  </Settings>
+</SettingsFile>

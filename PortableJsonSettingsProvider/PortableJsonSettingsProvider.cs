@@ -2,26 +2,27 @@
 using System.Collections;
 using System.Collections.Specialized;
 using System.Configuration;
-using System.Xml.Linq;
 using System.IO;
 using System.Reflection;
-using System.Xml;
+using System.Xml.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Bluegrams.Application
 {
     /// <summary>
-    /// Provides portable, persistent application settings.
+    /// Provides portable, persistent application settings in JSON format.
     /// </summary>
-    public class PortableSettingsProvider : SettingsProvider, IApplicationSettingsProvider
+    public class PortableJsonSettingsProvider : SettingsProvider, IApplicationSettingsProvider
     {
         /// <summary>
         /// Specifies the name of the settings file to be used.
         /// </summary>
-        public static string SettingsFileName { get; set; } = "portable.config";
+        public static string SettingsFileName { get; set; } = "settings.json";
 
         public static string SettingsDirectory { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
-        public override string Name => "PortableSettingsProvider";
+        public override string Name => "PortableJsonSettingsProvider";
 
         /// <summary>
         /// Applies this settings provider to each property of the given settings.
@@ -31,7 +32,7 @@ namespace Bluegrams.Application
         {
             foreach (var settings in settingsList)
             {
-                var provider = new PortableSettingsProvider();
+                var provider = new PortableJsonSettingsProvider();
                 settings.Providers.Clear();
                 settings.Providers.Add(provider);
                 foreach (SettingsProperty prop in settings.Properties)
@@ -41,7 +42,6 @@ namespace Bluegrams.Application
         }
 
         private string ApplicationSettingsFile => Path.Combine(SettingsDirectory, SettingsFileName);
-
 
         public override string ApplicationName { get { return Assembly.GetExecutingAssembly().GetName().Name; } set { } }
 
@@ -65,16 +65,16 @@ namespace Bluegrams.Application
         public void Upgrade(SettingsContext context, SettingsPropertyCollection properties)
         { /* don't do anything here*/ }
         
-        private XDocument GetXmlDoc()
+        private JObject GetJObject()
         {
             // to deal with multiple settings providers accessing the same file, reload on every set or get request.
-            XDocument xmlDoc = null;
+            JObject jObject = null;
             bool initnew = false;
             if (File.Exists(this.ApplicationSettingsFile))
             {
                 try
                 {
-                    xmlDoc = XDocument.Load(ApplicationSettingsFile);
+                    jObject = JObject.Parse(File.ReadAllText(ApplicationSettingsFile));
                 }
                 catch { initnew = true; }
             }
@@ -82,23 +82,26 @@ namespace Bluegrams.Application
                 initnew = true;
             if (initnew)
             {
-                xmlDoc = new XDocument(new XElement("configuration",
-                    new XElement("userSettings", new XElement("Roaming"))));
+                jObject = new JObject(
+                            new JProperty("userSettings",
+                                 new JObject(
+                                    new JProperty("roaming",
+                                        new JObject()))));
             }
-            return xmlDoc;
+            return jObject;
         }
 
         public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
         {
-            XDocument xmlDoc = GetXmlDoc();
+            JObject jObject = GetJObject();
             SettingsPropertyValueCollection values = new SettingsPropertyValueCollection();
             // iterate through settings to be retrieved
             foreach(SettingsProperty setting in collection)
             {
                 SettingsPropertyValue value = new SettingsPropertyValue(setting);
                 value.IsDirty = false;
-                //Set serialized value to xml element from file. This will be deserialized by SettingsPropertyValue when needed.
-                value.SerializedValue = getXmlValue(xmlDoc, XmlConvert.EncodeLocalName((string)context["GroupName"]), setting);
+                //Set serialized value to element from file. This will be deserialized by SettingsPropertyValue when needed.
+                value.SerializedValue = getSettingsValue(jObject, (string)context["GroupName"], setting);
                 values.Add(value);
             }
             return values;
@@ -106,96 +109,94 @@ namespace Bluegrams.Application
 
         public override void SetPropertyValues(SettingsContext context, SettingsPropertyValueCollection collection)
         {
-            XDocument xmlDoc = GetXmlDoc();
+            JObject jObject = GetJObject();
             foreach (SettingsPropertyValue value in collection)
             {
-                setXmlValue(xmlDoc, XmlConvert.EncodeLocalName((string)context["GroupName"]), value);
+                setSettingsValue(jObject, (string)context["GroupName"], value);
             }
             try
             {
-                // Make sure that special chars such as '\r\n' are preserved by replacing them with char entities.
-                using (var writer = XmlWriter.Create(ApplicationSettingsFile,
-                    new XmlWriterSettings() { NewLineHandling = NewLineHandling.Entitize, Indent=true }))
-                {
-                    xmlDoc.Save(writer);
-                }
+                File.WriteAllText(ApplicationSettingsFile, jObject.ToString());
             } catch { /* We don't want the app to crash if the settings file is not available */ }
         }
 
-        private object getXmlValue(XDocument xmlDoc, string scope, SettingsProperty prop)
+        private object getSettingsValue(JObject jObject, string scope, SettingsProperty prop)
         {
             object result = null;
             if (!IsUserScoped(prop))
                 return result;
             //determine the location of the settings property
-            XElement xmlSettings = xmlDoc.Element("configuration").Element("userSettings");
+            JObject settings = (JObject)jObject.SelectToken("userSettings");
             if (IsRoaming(prop))
-                xmlSettings = xmlSettings.Element("Roaming");
-            else xmlSettings = xmlSettings.Element("PC_" + Environment.MachineName);
+                settings = (JObject)settings["roaming"];
+            else settings = (JObject)settings["PC_" + Environment.MachineName];
             // retrieve the value or set to default if available
-            if (xmlSettings != null && xmlSettings.Element(scope) != null && xmlSettings.Element(scope).Element(prop.Name) != null)
+            if (settings != null && settings[scope] != null)
             {
-                using (var reader = xmlSettings.Element(scope).Element(prop.Name).CreateReader())
+                JToken propVal = settings[scope][prop.Name];
+                if (propVal != null)
                 {
-                reader.MoveToContent();
                     switch (prop.SerializeAs)
                     {
                         case SettingsSerializeAs.Xml:
-                            result = reader.ReadInnerXml();
+                            // Convert json back to xml as this is expected for an xml-serialized element.
+                            result =  JsonConvert.DeserializeXNode(propVal.ToString())?.ToString();
                             break;
                         case SettingsSerializeAs.Binary:
-                            result = reader.ReadInnerXml();
-                            result = Convert.FromBase64String(result as string);
+                            result = Convert.FromBase64String(propVal.ToString());
                             break;
                         default:
-                            result = reader.ReadElementContentAsString();
+                            result = propVal.ToString();
                             break;
                     }
                 }
+                else result = prop.DefaultValue;
             }
             else
                 result = prop.DefaultValue;
             return result;
         }
 
-        private void setXmlValue(XDocument xmlDoc, string scope, SettingsPropertyValue value)
+        private void setSettingsValue(JObject jObject, string scope, SettingsPropertyValue value)
         { 
             if (!IsUserScoped(value.Property)) return;
             //determine the location of the settings property
-            XElement xmlSettings = xmlDoc.Element("configuration").Element("userSettings");
-            XElement xmlSettingsLoc;
+            JObject settings = (JObject)jObject.SelectToken("userSettings");
+            JObject settingsLoc;
             if (IsRoaming(value.Property))
-                xmlSettingsLoc = xmlSettings.Element("Roaming");
-            else xmlSettingsLoc = xmlSettings.Element("PC_" + Environment.MachineName);
+                settingsLoc = (JObject)settings["roaming"];
+            else settingsLoc = (JObject)settings["PC_" + Environment.MachineName];
             // the serialized value to be saved
-            XNode serialized;
-            if (value.SerializedValue == null) serialized = new XText("");
+            JToken serialized;
+            if (value.SerializedValue == null) serialized = new JValue("");
             else if (value.Property.SerializeAs == SettingsSerializeAs.Xml)
-                serialized = XElement.Parse((string)value.SerializedValue);
-            else if (value.Property.SerializeAs == SettingsSerializeAs.Binary)
-                serialized = new XText(Convert.ToBase64String((byte[])value.SerializedValue));
-            else serialized = new XText((string)value.SerializedValue);
-            // check if setting already exists, otherwise create new
-            if (xmlSettingsLoc == null)
             {
-                if (IsRoaming(value.Property)) xmlSettingsLoc = new XElement("Roaming");
-                else xmlSettingsLoc = new XElement("PC_" + Environment.MachineName);
-                xmlSettingsLoc.Add(new XElement(scope,
-                    new XElement(value.Name, serialized)));
-                xmlSettings.Add(xmlSettingsLoc);
+                // Convert serialized XML to JSON
+                serialized = JObject.Parse(JsonConvert.SerializeXNode(XElement.Parse(value.SerializedValue.ToString())));
+            }
+            else if (value.Property.SerializeAs == SettingsSerializeAs.Binary)
+                serialized = new JValue(Convert.ToBase64String((byte[])value.SerializedValue));
+            else serialized = new JValue((string)value.SerializedValue);
+            // check if setting already exists, otherwise create new
+            if (settingsLoc == null)
+            {
+                string settingsSection;
+                if (IsRoaming(value.Property)) settingsSection = "roaming";
+                else settingsSection = "PC_" + Environment.MachineName;
+                settingsLoc = new JObject(new JProperty(scope,
+                    new JObject(new JProperty(value.Name, serialized))));
+                settings.Add(settingsSection, settingsLoc);
             }
             else
             {
-                XElement xmlScope = xmlSettingsLoc.Element(scope);
-                if (xmlScope != null)
+                JObject scopeProp = (JObject)settingsLoc[scope];
+                if (scopeProp != null)
                 {
-                    XElement xmlElem = xmlScope.Element(value.Name);
-                    if (xmlElem == null) xmlScope.Add(new XElement(value.Name, serialized));
-                    else xmlElem.ReplaceAll(serialized);
+                    scopeProp[value.Name] = serialized;
                 }
                 else
                 {
-                    xmlSettingsLoc.Add(new XElement(scope, new XElement(value.Name, serialized)));
+                    settingsLoc.Add(scope, new JObject(new JProperty(value.Name, serialized)));
                 }
             }
         }

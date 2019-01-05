@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net45</TargetFramework>
+    <Version>0.1</Version>
+    <Authors>Bluegrams</Authors>
+    <Copyright>© Bluegrams 2019</Copyright>
+    <PackageId>PortableJsonSettingsProvider</PackageId>
+    <PackageLicenseUrl>https://github.com/bluegrams/SettingsProviders/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/bluegrams/SettingsProviders</PackageProjectUrl>
+    <PackageTags>winforms wpf application settings portable json</PackageTags>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+  </ItemGroup>
+</Project>
