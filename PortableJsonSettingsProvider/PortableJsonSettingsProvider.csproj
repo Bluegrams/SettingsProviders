@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <Version>0.1</Version>
+    <Version>0.1.1</Version>
     <Authors>Bluegrams</Authors>
     <Copyright>© Bluegrams 2019</Copyright>
     <PackageId>PortableJsonSettingsProvider</PackageId>

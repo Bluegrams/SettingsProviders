@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <Version>0.2</Version>
+    <Version>0.2.1</Version>
     <Company>Bluegrams</Company>
     <Authors>Bluegrams</Authors>
     <Copyright>© Bluegrams 2019</Copyright>

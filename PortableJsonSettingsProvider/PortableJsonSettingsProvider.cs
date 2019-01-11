@@ -20,7 +20,10 @@ namespace Bluegrams.Application
         /// </summary>
         public static string SettingsFileName { get; set; } = "settings.json";
 
-        public static string SettingsDirectory { get; set; } = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        /// <summary>
+        /// Specifies the directory of the settings file.
+        /// </summary>
+        public static string SettingsDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
         public override string Name => "PortableJsonSettingsProvider";
 
