@@ -25,6 +25,11 @@ namespace Bluegrams.Application
         /// </summary>
         public static string SettingsDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
 
+        /// <summary>
+        /// Specifies if all settings should be roaming.
+        /// </summary>
+        public static bool AllRoaming { get; set; } = false;
+
         public override string Name => "PortableJsonSettingsProvider";
 
         /// <summary>
@@ -219,6 +224,8 @@ namespace Bluegrams.Application
         // Iterates through the properties' attributes to determine whether it's set to roam.
         private bool IsRoaming(SettingsProperty prop)
         {
+            if (AllRoaming)
+                return true;
             foreach (DictionaryEntry d in prop.Attributes)
             {
                 Attribute a = (Attribute)d.Value;
