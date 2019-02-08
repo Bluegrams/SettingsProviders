@@ -11,6 +11,10 @@
     <PackageTags>winforms wpf application settings portable json</PackageTags>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="..\Shared\PortableSettingsProviderBase.cs" Link="PortableSettingsProviderBase.cs" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
   </ItemGroup>

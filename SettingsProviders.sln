@@ -17,6 +17,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{A1671D86-B204-4FE3-80F0-CB5A1A5E80D1}"
+	ProjectSection(SolutionItems) = preProject
+		Shared\PortableSettingsProviderBase.cs = Shared\PortableSettingsProviderBase.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -78,6 +83,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A1671D86-B204-4FE3-80F0-CB5A1A5E80D1} = {6B71E16E-C9E5-49F6-9072-F072481C3561}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {288B84D7-34C9-40D6-8B02-969FDC8235B8}

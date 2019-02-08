@@ -18,6 +18,9 @@ Read more at https://www.codeproject.com/Articles/1238550/Making-Application-Set
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="..\Shared\PortableSettingsProviderBase.cs" Link="PortableSettingsProviderBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System.Configuration" />
   </ItemGroup>
 </Project>

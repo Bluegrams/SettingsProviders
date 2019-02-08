@@ -1,33 +1,20 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Specialized;
 using System.Configuration;
-using System.Xml.Linq;
 using System.IO;
-using System.Reflection;
 using System.Xml;
+using System.Xml.Linq;
 
 namespace Bluegrams.Application
 {
     /// <summary>
     /// Provides portable, persistent application settings.
     /// </summary>
-    public class PortableSettingsProvider : SettingsProvider, IApplicationSettingsProvider
+    public class PortableSettingsProvider : PortableSettingsProviderBase
     {
         /// <summary>
         /// Specifies the name of the settings file to be used.
         /// </summary>
         public static string SettingsFileName { get; set; } = "portable.config";
-
-        /// <summary>
-        /// Specifies the directory of the settings file.
-        /// </summary>
-        public static string SettingsDirectory { get; set; } = AppDomain.CurrentDomain.BaseDirectory;
-
-        /// <summary>
-        /// Specifies if all settings should be roaming.
-        /// </summary>
-        public static bool AllRoaming { get; set; } = false;
 
         public override string Name => "PortableSettingsProvider";
 
@@ -36,43 +23,16 @@ namespace Bluegrams.Application
         /// </summary>
         /// <param name="settingsList">An array of settings.</param>
         public static void ApplyProvider(params ApplicationSettingsBase[] settingsList)
-        {
-            foreach (var settings in settingsList)
-            {
-                var provider = new PortableSettingsProvider();
-                settings.Providers.Clear();
-                settings.Providers.Add(provider);
-                foreach (SettingsProperty prop in settings.Properties)
-                    prop.Provider = provider;
-                settings.Reload();
-            }
-        }
+            => ApplyProvider(new PortableSettingsProvider(), settingsList);
 
         private string ApplicationSettingsFile => Path.Combine(SettingsDirectory, SettingsFileName);
 
-
-        public override string ApplicationName { get { return Assembly.GetExecutingAssembly().GetName().Name; } set { } }
-
-        public override void Initialize(string name, NameValueCollection config)
-        {
-            if (String.IsNullOrEmpty(name)) name = Name;
-            base.Initialize(name, config);
-        }
-
-        public SettingsPropertyValue GetPreviousVersion(SettingsContext context, SettingsProperty property)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Reset(SettingsContext context)
+        public override void Reset(SettingsContext context)
         {
             if (File.Exists(ApplicationSettingsFile))
                 File.Delete(ApplicationSettingsFile);
         }
 
-        public void Upgrade(SettingsContext context, SettingsPropertyCollection properties)
-        { /* don't do anything here*/ }
-        
         private XDocument GetXmlDoc()
         {
             // to deal with multiple settings providers accessing the same file, reload on every set or get request.
@@ -206,32 +166,6 @@ namespace Bluegrams.Application
                     xmlSettingsLoc.Add(new XElement(scope, new XElement(value.Name, serialized)));
                 }
             }
-        }
-
-        // Iterates through the properties' attributes to determine whether it's user-scoped or application-scoped.
-        private bool IsUserScoped(SettingsProperty prop)
-        {
-            foreach (DictionaryEntry d in prop.Attributes)
-            {
-                Attribute a = (Attribute)d.Value;
-                if (a.GetType() == typeof(UserScopedSettingAttribute))
-                    return true;
-            }
-            return false;
-        }
-
-        // Iterates through the properties' attributes to determine whether it's set to roam.
-        private bool IsRoaming(SettingsProperty prop)
-        {
-            if (AllRoaming)
-                return true;
-            foreach (DictionaryEntry d in prop.Attributes)
-            {
-                Attribute a = (Attribute)d.Value;
-                if (a.GetType() == typeof(SettingsManageabilityAttribute))
-                    return true;
-            }
-            return false;
         }
     }
 }
