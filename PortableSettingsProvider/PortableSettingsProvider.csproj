@@ -1,10 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
-    <Version>0.2.1</Version>
+    <Version>0.2.2</Version>
     <Company>Bluegrams</Company>
     <Authors>Bluegrams</Authors>
-    <Copyright>© Bluegrams 2019</Copyright>
+    <Copyright>© 2019 Bluegrams</Copyright>
     <PackageId>PortableSettingsProvider</PackageId>
     <Description>
       Make WPF and WinForms settings portable by saving them in the application folder.
@@ -13,7 +13,8 @@ Read more at https://www.codeproject.com/Articles/1238550/Making-Application-Set
     <PackageProjectUrl>https://github.com/bluegrams/SettingsProviders</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/bluegrams/SettingsProviders/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>winforms wpf application settings portable</PackageTags>
-    <PackageReleaseNotes>V.0.2 adds the possibility to specify the name and location of the settings file.
+    <PackageReleaseNotes>V.0.2.2 adds an 'AllRoaming' property.
+V.0.2 adds the possibility to specify the name and location of the settings file.
 (Note: The package license has changed to BSD-3-Clause.)</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
