@@ -137,7 +137,8 @@ namespace Bluegrams.Application
             else xmlSettingsLoc = xmlSettings.Element("PC_" + Environment.MachineName);
             // the serialized value to be saved
             XNode serialized;
-            if (value.SerializedValue == null) serialized = new XText("");
+            if (value.SerializedValue == null || value.SerializedValue is string s && String.IsNullOrWhiteSpace(s))
+                serialized = new XText("");
             else if (value.Property.SerializeAs == SettingsSerializeAs.Xml)
                 serialized = XElement.Parse((string)value.SerializedValue);
             else if (value.Property.SerializeAs == SettingsSerializeAs.Binary)

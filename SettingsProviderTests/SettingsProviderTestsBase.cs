@@ -76,6 +76,17 @@ namespace SettingsProviderTests
             Assert.AreEqual(0, color.B);
         }
 
+        [TestMethod]
+        // Test that no exception is thrown here.
+        public void NullReferenceTest()
+        {
+            Properties.Settings.Default.ARoamedNumber = 333;
+            Properties.Settings.Default.Save();
+            Properties.Settings.Default.Reload();
+            var person1 = Properties.Settings.Default.APerson;
+            Properties.Settings.Default.Save();
+        }
+
         // Delete the created settings file and reset the settings after every test.
         [TestCleanup]
         public void TestCleanup()
