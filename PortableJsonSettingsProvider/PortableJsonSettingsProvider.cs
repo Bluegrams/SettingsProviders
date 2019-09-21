@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Xml.Linq;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -45,34 +46,41 @@ namespace Bluegrams.Application
                 {
                     jObject = JObject.Parse(File.ReadAllText(ApplicationSettingsFile));
                 }
-                catch { initnew = true; }
+                catch
+                {
+                    initnew = true;
+                }
             }
             else
                 initnew = true;
+
             if (initnew)
             {
                 jObject = new JObject(
-                            new JProperty("userSettings",
-                                 new JObject(
-                                    new JProperty("roaming",
-                                        new JObject()))));
+                    new JProperty("userSettings",
+                        new JObject(
+                            new JProperty("roaming",
+                                new JObject()))));
             }
+
             return jObject;
         }
 
-        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context, SettingsPropertyCollection collection)
+        public override SettingsPropertyValueCollection GetPropertyValues(SettingsContext context,
+            SettingsPropertyCollection collection)
         {
             JObject jObject = GetJObject();
             SettingsPropertyValueCollection values = new SettingsPropertyValueCollection();
             // iterate through settings to be retrieved
-            foreach(SettingsProperty setting in collection)
+            foreach (SettingsProperty setting in collection)
             {
                 SettingsPropertyValue value = new SettingsPropertyValue(setting);
                 value.IsDirty = false;
                 //Set serialized value to element from file. This will be deserialized by SettingsPropertyValue when needed.
-                value.SerializedValue = getSettingsValue(jObject, (string)context["GroupName"], setting);
+                value.SerializedValue = getSettingsValue(jObject, (string) context["GroupName"], setting);
                 values.Add(value);
             }
+
             return values;
         }
 
@@ -81,12 +89,19 @@ namespace Bluegrams.Application
             JObject jObject = GetJObject();
             foreach (SettingsPropertyValue value in collection)
             {
-                setSettingsValue(jObject, (string)context["GroupName"], value);
+                setSettingsValue(jObject, (string) context["GroupName"], value);
             }
+
             try
             {
-                File.WriteAllText(ApplicationSettingsFile, jObject.ToString());
-            } catch { /* We don't want the app to crash if the settings file is not available */ }
+                File.WriteAllText(ApplicationSettingsFile,
+                    JsonConvert.SerializeObject(JsonUtility.SortPropertiesAlphabetically(jObject),
+                        Formatting.Indented));
+            }
+            catch
+            {
+                /* We don't want the app to crash if the settings file is not available */
+            }
         }
 
         private object getSettingsValue(JObject jObject, string scope, SettingsProperty prop)
@@ -95,10 +110,10 @@ namespace Bluegrams.Application
             if (!IsUserScoped(prop))
                 return result;
             //determine the location of the settings property
-            JObject settings = (JObject)jObject.SelectToken("userSettings");
+            JObject settings = (JObject) jObject.SelectToken("userSettings");
             if (IsRoaming(prop))
-                settings = (JObject)settings["roaming"];
-            else settings = (JObject)settings["PC_" + Environment.MachineName];
+                settings = (JObject) settings["roaming"];
+            else settings = (JObject) settings["PC_" + Environment.MachineName];
             // retrieve the value or set to default if available
             if (settings != null && settings[scope] != null)
             {
@@ -109,7 +124,7 @@ namespace Bluegrams.Application
                     {
                         case SettingsSerializeAs.Xml:
                             // Convert json back to xml as this is expected for an xml-serialized element.
-                            result =  JsonConvert.DeserializeXNode(propVal.ToString())?.ToString();
+                            result = JsonConvert.DeserializeXNode(propVal.ToString())?.ToString();
                             break;
                         case SettingsSerializeAs.Binary:
                             result = Convert.FromBase64String(propVal.ToString());
@@ -123,29 +138,32 @@ namespace Bluegrams.Application
             }
             else
                 result = prop.DefaultValue;
+
             return result;
         }
 
         private void setSettingsValue(JObject jObject, string scope, SettingsPropertyValue value)
-        { 
+        {
             if (!IsUserScoped(value.Property)) return;
             //determine the location of the settings property
-            JObject settings = (JObject)jObject.SelectToken("userSettings");
+            JObject settings = (JObject) jObject.SelectToken("userSettings");
             JObject settingsLoc;
             if (IsRoaming(value.Property))
-                settingsLoc = (JObject)settings["roaming"];
-            else settingsLoc = (JObject)settings["PC_" + Environment.MachineName];
+                settingsLoc = (JObject) settings["roaming"];
+            else settingsLoc = (JObject) settings["PC_" + Environment.MachineName];
             // the serialized value to be saved
             JToken serialized;
             if (value.SerializedValue == null) serialized = new JValue("");
             else if (value.Property.SerializeAs == SettingsSerializeAs.Xml)
             {
                 // Convert serialized XML to JSON
-                serialized = JObject.Parse(JsonConvert.SerializeXNode(XElement.Parse(value.SerializedValue.ToString())));
+                serialized =
+                    JObject.Parse(JsonConvert.SerializeXNode(XElement.Parse(value.SerializedValue.ToString())));
             }
             else if (value.Property.SerializeAs == SettingsSerializeAs.Binary)
-                serialized = new JValue(Convert.ToBase64String((byte[])value.SerializedValue));
-            else serialized = new JValue((string)value.SerializedValue);
+                serialized = new JValue(Convert.ToBase64String((byte[]) value.SerializedValue));
+            else serialized = new JValue((string) value.SerializedValue);
+
             // check if setting already exists, otherwise create new
             if (settingsLoc == null)
             {
@@ -158,7 +176,7 @@ namespace Bluegrams.Application
             }
             else
             {
-                JObject scopeProp = (JObject)settingsLoc[scope];
+                JObject scopeProp = (JObject) settingsLoc[scope];
                 if (scopeProp != null)
                 {
                     scopeProp[value.Name] = serialized;
@@ -168,6 +186,31 @@ namespace Bluegrams.Application
                     settingsLoc.Add(scope, new JObject(new JProperty(value.Name, serialized)));
                 }
             }
+        }
+    }
+
+    public class JsonUtility
+    {
+        public static JObject SortPropertiesAlphabetically(JObject original)
+        {
+            var result = new JObject();
+
+            foreach (var property in original.Properties().ToList().OrderBy(p => p.Name))
+            {
+                var value = property.Value as JObject;
+
+                if (value != null)
+                {
+                    value = SortPropertiesAlphabetically(value);
+                    result.Add(property.Name, value);
+                }
+                else
+                {
+                    result.Add(property.Name, property.Value);
+                }
+            }
+
+            return result;
         }
     }
 }
