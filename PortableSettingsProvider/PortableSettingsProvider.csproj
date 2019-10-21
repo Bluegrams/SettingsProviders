@@ -1,4 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+
   <PropertyGroup>
     <TargetFramework>net45</TargetFramework>
     <Version>0.2.3</Version>
@@ -18,6 +19,7 @@ V.0.2.2 adds an 'AllRoaming' property.
 (Note: The package license has changed to BSD-3-Clause.)</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
+
   <ItemGroup>
     <Compile Include="..\Shared\PortableSettingsProviderBase.cs" Link="PortableSettingsProviderBase.cs" />
   </ItemGroup>
