@@ -1,20 +1,21 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net45</TargetFramework>
-    <Version>0.2.3</Version>
+    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
+    <Version>0.2.4</Version>
     <Company>Bluegrams</Company>
     <Authors>Bluegrams</Authors>
-    <Copyright>© 2019 Bluegrams</Copyright>
+    <Copyright>© 2020 Bluegrams</Copyright>
     <PackageId>PortableSettingsProvider</PackageId>
     <Description>
-      Make WPF and WinForms settings portable by saving them in the application folder.
+Make WPF and WinForms settings portable by saving them in the application folder.
 Read more at https://www.codeproject.com/Articles/1238550/Making-Application-Settings-Portable.
     </Description>
     <PackageProjectUrl>https://github.com/bluegrams/SettingsProviders</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/bluegrams/SettingsProviders/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>winforms wpf application settings portable</PackageTags>
-    <PackageReleaseNotes>V.0.2.3 fixes an XML serialization bug.
+    <PackageReleaseNotes>V.0.2.4 adds .NET Standard 2.0 as target.
+V.0.2.3 fixes an XML serialization bug.
 V.0.2.2 adds an 'AllRoaming' property.
 (Note: The package license has changed to BSD-3-Clause.)</PackageReleaseNotes>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -23,7 +24,10 @@ V.0.2.2 adds an 'AllRoaming' property.
   <ItemGroup>
     <Compile Include="..\Shared\PortableSettingsProviderBase.cs" Link="PortableSettingsProviderBase.cs" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net45' ">
     <Reference Include="System.Configuration" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
   </ItemGroup>
 </Project>
