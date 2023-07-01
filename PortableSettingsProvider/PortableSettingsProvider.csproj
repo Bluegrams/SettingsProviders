@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netstandard2.0</TargetFrameworks>
-    <Version>0.2.4</Version>
+    <TargetFrameworks>net45;netstandard2.0;net6.0;net7.0</TargetFrameworks>
+    <Version>0.2.5</Version>
     <Company>Bluegrams</Company>
     <Authors>Bluegrams</Authors>
     <Copyright>© 2020 Bluegrams</Copyright>
@@ -14,7 +14,8 @@ Read more at https://www.codeproject.com/Articles/1238550/Making-Application-Set
     <PackageProjectUrl>https://github.com/bluegrams/SettingsProviders</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/bluegrams/SettingsProviders/blob/master/LICENSE</PackageLicenseUrl>
     <PackageTags>winforms wpf application settings portable</PackageTags>
-    <PackageReleaseNotes>V.0.2.4 adds .NET Standard 2.0 as target.
+    <PackageReleaseNotes>V.0.2.5 adds .NET 6.0 and 7.0 as targets.
+V.0.2.4 adds .NET Standard 2.0 as target.
 V.0.2.3 fixes an XML serialization bug.
 V.0.2.2 adds an 'AllRoaming' property.
 (Note: The package license has changed to BSD-3-Clause.)</PackageReleaseNotes>
@@ -29,5 +30,8 @@ V.0.2.2 adds an 'AllRoaming' property.
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net6.0' or '$(TargetFramework)' == 'net7.0' ">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="7.0.0" />
   </ItemGroup>
 </Project>
