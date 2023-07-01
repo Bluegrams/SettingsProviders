@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26124.0
@@ -6,6 +6,8 @@ MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortableSettingsProvider", "PortableSettingsProvider\PortableSettingsProvider.csproj", "{87932FAD-8DC2-4877-A1BE-7370728FD067}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PortableJsonSettingsProvider", "PortableJsonSettingsProvider\PortableJsonSettingsProvider.csproj", "{5DFFBB14-780F-49C9-A9DF-36523A5A62BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsTestApp", "WinFormsTestApp\WinFormsTestApp.csproj", "{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SettingsProviderTests", "SettingsProviderTests\SettingsProviderTests.csproj", "{176AD400-D295-42D3-AEEE-F3359F898DEF}"
 EndProject
@@ -54,6 +56,18 @@ Global
 		{5DFFBB14-780F-49C9-A9DF-36523A5A62BF}.Release|x64.Build.0 = Release|Any CPU
 		{5DFFBB14-780F-49C9-A9DF-36523A5A62BF}.Release|x86.ActiveCfg = Release|Any CPU
 		{5DFFBB14-780F-49C9-A9DF-36523A5A62BF}.Release|x86.Build.0 = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|x64.Build.0 = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Debug|x86.Build.0 = Debug|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|x64.ActiveCfg = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|x64.Build.0 = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|x86.ActiveCfg = Release|Any CPU
+		{992D87CF-9E55-43A4-B520-3E21AFE2B4E5}.Release|x86.Build.0 = Release|Any CPU
 		{176AD400-D295-42D3-AEEE-F3359F898DEF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{176AD400-D295-42D3-AEEE-F3359F898DEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{176AD400-D295-42D3-AEEE-F3359F898DEF}.Debug|x64.ActiveCfg = Debug|Any CPU
